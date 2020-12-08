@@ -148,10 +148,10 @@ defmodule ExTwilio.UrlGenerator do
 
   @spec add_account_to_options(atom, list) :: list
   defp add_account_to_options(module, options) do
-    if module == ExTwilio.Account and options[:account] == nil do
-      options
-    else
-      Keyword.put_new(options, :account, Config.account_sid())
+    case {module, options[:account]} do
+      {ExTwilio.Account, _} -> Keyword.delete(options, :account)
+      {_, acc} when is_binary(acc) -> options
+      _other -> Keyword.put_new(options, :account, Config.account_sid())
     end
   end
 
